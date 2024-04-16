@@ -1,28 +1,31 @@
-
 use std::collections::HashMap;
 
-
-fn max_key(vocab: &HashMap<String, i32>) -> Option<&String>
-{
-    vocab
-        .iter()
-        .max_by(|a, b| a.1.cmp(&b.1))
-        .map(|(k, _v)| k)
+fn max_key(map: &HashMap<(char, char), i32>) -> Option<&(char, char)> {
+    map.iter().max_by(|a, b| a.1.cmp(b.1)).map(|(k, _v)| k)
 }
 
-
-fn to_vocab(txt: String) -> HashMap<String, i32> {
-    let mut vocab: HashMap<String, i32> = HashMap::new();
-
-    for c in txt.chars(){
-        vocab.entry(c.to_string()).and_modify(|counter| *counter += 1).or_insert(1);
+fn string_to_vocab(input_string: String) -> HashMap<(char, char), i32> {
+    let characters: Vec<char> = input_string.chars().collect();
+    let len_chars = characters.len();
+    let mut vocab: HashMap<(char, char), i32> = HashMap::new();
+    let it = characters[0..len_chars - 1]
+        .iter()
+        .zip(characters[1..len_chars].iter());
+    for (c0, c1) in it {
+        vocab
+            .entry((*c0, *c1))
+            .and_modify(|counter: &mut i32| *counter += 1)
+            .or_insert(1);
     }
-    return vocab;
+    vocab
 }
 
 fn main() {
-    let vocab = to_vocab(String::from("blaaaa asdas ss"));
-    let max_entry = max_key(&vocab);
-    println!("{:?}", max_entry);
-
+    let mystring = String::from("hello world");
+    let vocab = string_to_vocab(mystring);
+    for (k, _v) in vocab.iter() {
+        println!("{}, {}", k.0, k.1);
+    }
+    let _mxkey: Option<&(char, char)> = max_key(&vocab);
+    println!("{:?}", _mxkey.unwrap());
 }
